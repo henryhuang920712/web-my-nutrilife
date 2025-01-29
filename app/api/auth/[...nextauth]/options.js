@@ -3,7 +3,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import Pool from '@/lib/mssql_db';
+import pool from "@/lib/db";
 
 export const options = {
     providers: [
@@ -38,26 +38,36 @@ export const options = {
             },
             async authorize(credentials) {
                 try {
+                    // Query the database to find the user by username or email
+                    const query = `
+                    SELECT * FROM users 
+                    WHERE u_name = $1 OR email = $2
+                    `;
+                    const values = [credentials.username, credentials.email];
+                    const result = await pool.query(query, values);
 
-                    const foundUser = await Pool().then(async pool => {
-                        const result = await pool.request()
-                            .query(`SELECT * FROM Members WHERE username = '${credentials.username}' OR email = '${credentials.email}'`);
-                        return result.recordset[0];
-                    })
+                    const foundUser = result.rows[0];
+
                     if (!foundUser) {
-                        return { error: "User not found" };
+                        throw new Error("User not found");
                     }
+
+                    // Compare hashed password
                     const match = await bcrypt.compare(credentials.password, foundUser.password);
+
                     if (!match) {
-                        return { error: "Wrong password" };
-                    } else {
-                        delete foundUser.password;
-                        return foundUser;
+                        throw new Error("Wrong password");
                     }
+
+                    // Remove password before returning user data
+                    delete foundUser.password;
+                    return foundUser;
+
                 } catch (error) {
-                    console.log(error);
-                    return { error: "Error: " + error.message };
+                    console.error(error);
+                    throw new Error("Error: " + error.message);
                 }
+
             }
         })
     ],

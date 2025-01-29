@@ -1,9 +1,7 @@
 import Image from "next/image";
-// import navbar from components
 import Navbar from "../components/navbar";
-// import { useSession, signIn } from "next-auth/react";
 // import ImageSlider from "../components/imageSlider";
-
+import AuthProvider from "@/components/authProvider";
 export default function Home() {
   return (
     <div className="container w-full h-screen relative overflow-hidden">
@@ -17,7 +15,9 @@ export default function Home() {
         />
       </div>
       <div className="absolute inset-0 bg-black bg-opacity-50 animate-fullMask">
+      <AuthProvider>
         <Navbar />
+        </AuthProvider>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center flex-col">
           <h1 className="text-white text-4xl font-semibold text-center">
             Welcome to our website

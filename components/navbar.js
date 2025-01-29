@@ -2,10 +2,15 @@
 "use client";
 
 import React, { useState } from "react";
-// import RegisterModal from "./modal/registerModal";
+import RegisterModal from "./modal/registerModal";
+import LoginModal from "./modal/loginModal";
+import { useSession, signIn } from "next-auth/react";
+import { usePathname } from 'next/navigation';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const pathname = usePathname();
   // Toggle the mobile menu
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -31,8 +36,12 @@ const Navbar = () => {
 
         {/* log in and sign up */}
         <div className="hidden md:flex space-x-6">
-          {/* <RegisterModal /> */}
-          <a href="#" className="text-white">Sign up</a>
+          {status === "authenticated" ? <a href={`/api/auth/signout?callbackUrl=${pathname}`} className="mx-0">{session.user?.email}</a>
+							:
+							<LoginModal />
+						}          
+          <RegisterModal />
+
         </div>
 
         {/* Hamburger menu (visible on mobile) */}

@@ -3,7 +3,7 @@
 function Modal({ isOpen, onClose, children }) {
     return (
       <div
-        className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        className={`text-black fixed inset-0 z-50 flex items-center justify-center transition-opacity ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
           }`}
         style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       >
