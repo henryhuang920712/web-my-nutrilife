@@ -7,29 +7,29 @@ import pool from "@/lib/db";
 
 export const options = {
     providers: [
-        GoogleProvider({
-            profile(profile) {
-                let userRole = "google_user";
-                return {
-                    ...profile,
-                    id: profile.sub,
-                    role: userRole
-                }
-            },
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        }),
-        GithubProvider({
-            profile(profile) {
-                let userRole = "github_user";
-                return {
-                    ...profile,
-                    role: userRole
-                }
-            },
-            clientId: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        }),
+        // GoogleProvider({
+        //     profile(profile) {
+        //         let userRole = "google_user";
+        //         return {
+        //             ...profile,
+        //             id: profile.sub,
+        //             role: userRole
+        //         }
+        //     },
+        //     clientId: process.env.GOOGLE_CLIENT_ID,
+        //     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        // }),
+        // GithubProvider({
+        //     profile(profile) {
+        //         let userRole = "github_user";
+        //         return {
+        //             ...profile,
+        //             role: userRole
+        //         }
+        //     },
+        //     clientId: process.env.GITHUB_CLIENT_ID,
+        //     clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        // }),
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
@@ -47,6 +47,8 @@ export const options = {
                     const result = await pool.query(query, values);
 
                     const foundUser = result.rows[0];
+
+                    console.log(result.rows[0])
 
                     if (!foundUser) {
                         throw new Error("User not found");
@@ -79,12 +81,12 @@ export const options = {
             if (account.provider === "credentials") {
                 return true;
             }
-            if (account.provider === "github") {
-                return true;
-            }
-            if (account.provider === "google") {
-                return true;
-            }
+            // if (account.provider === "github") {
+            //     return true;
+            // }
+            // if (account.provider === "google") {
+            //     return true;
+            // }
             return false;
         },
         async redirect({url, baseUrl}) {
@@ -92,13 +94,22 @@ export const options = {
         },
         async jwt({token, user}) {
             if (user) {
-                token.role = user.role;
+                token.u_id = user.u_id;
+                token.u_name = user.u_name;
+                token.email = user.email;
+                token.birth_date = user.birth_date;
+                token.created_date = user.created_date;
+                token.t_id = user.t_id;
             }
             return token;
         },
         async session({session, token}) {
             if (session?.user) {
-                session.user.role = token.user;
+                session.user.u_id = token.u_id;
+                session.user.u_name = token.u_name;
+                session.user.birth_date = token.birth_date;
+                session.user.created_date = token.created_date;
+                session.user.t_id = token.t_id;
             }
             return session;
         }
