@@ -27,7 +27,7 @@ export default function OptionMenu() {
   return (
     <div className="relative text-black" ref={menuRef}>
       <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md">
-      {session.user?.u_name} <ChevronDown className="w-4 h-4" />
+      {session.user?.(u_name)} <ChevronDown className="w-4 h-4" />
       </button>
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg">
