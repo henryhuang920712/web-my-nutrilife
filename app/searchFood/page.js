@@ -1,5 +1,6 @@
 "use client";
 
+// 查詢各食物營養素資訊
 import { useState } from "react";
 
 export default function FoodSearchPage() {
