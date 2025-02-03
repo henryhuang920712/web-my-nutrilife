@@ -1,27 +1,36 @@
 
 "use client";
 
-import React, { useState } from "react";
-import RegisterModal from "./modal/registerModal";
-import LoginModal from "./modal/loginModal";
+import React, { useState, useEffect } from "react";
 import OptionMenu from "./dropdown/optionMenu";
 import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";  
 
-
-const Navbar = () => {
+const Navbar = ({...props}) => {
+  const [isLoginModalOpen, setIsLoginModalOpen] = props.isLoginModalOpen ? useState(props.isLoginModalOpen) : useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = props.isRegisterModalOpen ? useState(props.isRegisterModalOpen) : useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: session, status } = useSession();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Toggle the mobile menu
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [status]);
+
   return (
-    <div className="p-6 animate-fadeIn">
+    <div className="p-6 animate-fadeIn h-20 bg-gray-800">
       <div className="max-w-screen-xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="text-white text-2xl font-semibold">
+        <a href="/" className="text-white text-2xl font-semibold">
           Logo
         </a>
 
@@ -38,12 +47,27 @@ const Navbar = () => {
         {/* log in and sign up */}
         {/* <a  className="mx-0">{session.user?.email}</a> */}
         <div className="hidden md:flex space-x-6">
-          {status === "authenticated" ? <OptionMenu />
+          {isLoggedIn ? <OptionMenu />
 							:
-							<LoginModal />
-						}          
-          <RegisterModal />
+              <div>
+              <button
+                  className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                  onClick={() => setIsLoginModalOpen(true)}
+              >
+                  Login
+              </button>
+              </div>
+						} 
 
+          <div className="">
+            <button
+                className="px-4 py-1 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                onClick={() => setIsRegisterModalOpen(true)}
+            >
+                Register
+            </button>     
+              
+        </div>
         </div>
 
         {/* Hamburger menu (visible on mobile) */}
@@ -68,4 +92,31 @@ const Navbar = () => {
   );
 };
 
+const GetStartedButton = ({setIsLoginModalOpen, setNavigatePath }) => {
+  const { data: session, status } = useSession();
+  
+  const router = useRouter();
+  const handleStart = () => {
+    // if session then redirect to dashboard
+    // else open login modal
+    if (status === "authenticated") {
+      // redirect to dashboard
+      router.push("/dashboard");
+    } else {
+      // open login modal
+      setIsLoginModalOpen(true);
+      setNavigatePath("/dashboard");
+    }
+  }
+
+
+  return (
+    <>
+    <button onClick={handleStart} className="bg-white text-black px-6 py-2 rounded-full hover:bg-black hover:text-white cursor-pointer transition-all">
+    Get started
+  </button>
+  </>
+  )
+}
+export { Navbar, GetStartedButton };
 export default Navbar;
