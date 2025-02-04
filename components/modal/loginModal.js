@@ -3,10 +3,19 @@ import { useSession, signIn } from "next-auth/react";
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-const LoginModal = ({ isModalOpen, setIsModalOpen, navigateToRegister, navigatePath="" }) => {
+import { Terminal , CircleCheck, CircleX} from "lucide-react"
+ 
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert"
+
+
+
+const LoginModal = ({ isModalOpen, setIsModalOpen, navigateToRegister, navigatePath = "" }) => {
     const [response, setResponse] = useState(null);
-    const router = useRouter();
+
     // const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
 
@@ -35,6 +44,12 @@ const LoginModal = ({ isModalOpen, setIsModalOpen, navigateToRegister, navigateP
                     setTimeout(() => {
                         setIsModalOpen(false); // Close modal on success
                         setResponse(null);
+                        // reload the page
+                        if (navigatePath) {
+                            window.location.href = navigatePath;
+                        } else {
+                            window.location.reload();
+                        }
                     }, 1500);
                 }
 
@@ -91,27 +106,15 @@ const LoginModal = ({ isModalOpen, setIsModalOpen, navigateToRegister, navigateP
                 </div>
 
                 {/* Error Message Modal */}
-                {response && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-                        <div className="bg-white shadow-lg rounded-lg p-6 w-96 text-center">
-                            <p className={`text-lg font-semibold ${response.status === 200 ? "text-green-600" : "text-red-600"}`}>
-                                {response.message}
-                            </p>
-                            <button
-                                onClick={() => {
-                                    setResponse(null);    
-                                    if (navigatePath && response.status === 200) {
-                                        setResponse(null);
-                                        router.push(navigatePath);
-                                    }
-                                    setResponse(null);
-                                }}
-                                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
+                {response && (<Alert>
+                    <Terminal className="h-4 w-4 flex space-x-2" />
+                    <AlertTitle>
+                    {response.status === 200 ? <CircleCheck /> : <CircleX />}
+                    </AlertTitle>
+                    <AlertDescription>
+                    {response.message}
+                    </AlertDescription>
+                </Alert>
                 )}
                 {/* Submit Button */}
                 <button type="submit" className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">

@@ -5,10 +5,9 @@ import React, { useState, useEffect } from "react";
 import OptionMenu from "./dropdown/optionMenu";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";  
+import {Settings} from "lucide-react";
 
-const Navbar = ({...props}) => {
-  const [isLoginModalOpen, setIsLoginModalOpen] = props.isLoginModalOpen ? useState(props.isLoginModalOpen) : useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = props.isRegisterModalOpen ? useState(props.isRegisterModalOpen) : useState(false);
+const Navbar = ({isLoginModalOpen, setIsLoginModalOpen, isRegisterModalOpen, setIsRegisterModalOpen}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { data: session, status } = useSession();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,60 +18,68 @@ const Navbar = ({...props}) => {
   };
 
   useEffect(() => {
+    // Only proceed once session is no longer loading
+    if (status === "loading") return;
+
     if (status === "authenticated") {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
     }
-  }, [status]);
-
+  }, [status]); // Depend on `status
   return (
-    <div className="p-6 animate-fadeIn h-20 bg-gray-800">
+    <div className="p-6 animate-fadeIn h-[4.5rem] bg-white">
       <div className="max-w-screen-xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="text-white text-2xl font-semibold">
+        <a href="/" className="text-black text-2xl font-semibold">
           Logo
         </a>
-
-        {/* Navbar items */}
-        <div className="hidden md:flex space-x-6">
-          <a href="#" className="text-white">Home</a>
-          <a href="#" className="text-white">About</a>
-          <a href="#" className="text-white">Services</a>
-          <a href="#" className="text-white">Contact</a>
-        </div>
 
         {/* <div className="w-1 h-full bg-black"></div> */}
 
         {/* log in and sign up */}
         {/* <a  className="mx-0">{session.user?.email}</a> */}
-        <div className="hidden md:flex space-x-6">
+        <div className="hidden md:flex space-x-2">
+          <div className="text-black px-4 py-1 flex justify-center items-center">
+          <a href="#">Home</a>
+          </div>
+          <div className="text-black px-4 py-1 flex justify-center items-center">
+          <a href="#">About</a>
+          </div>
+          <div className="text-black px-4 py-1 flex justify-center items-center">
+          <a href="#">Services</a>
+          </div>
+          <div className="text-black px-4 py-1 flex justify-center items-center">
+          <a href="#">Contact</a>
+          </div>        
           {isLoggedIn ? <OptionMenu />
 							:
               <div>
               <button
-                  className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                  className="flex justify-center items-center px-4 py-1 text-black rounded-full hover:bg-gray-800 hover:text-white cursor-pointer transition-all"
                   onClick={() => setIsLoginModalOpen(true)}
               >
                   Login
               </button>
               </div>
 						} 
-
-          <div className="">
+          <div className="flex justify-center items-center border-2 px-4 py-1 text-black rounded-full hover:bg-gray-800 hover:text-white cursor-pointer transition-all">
+            {isLoggedIn ?  <Settings /> : 
             <button
-                className="px-4 py-1 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                className=""
                 onClick={() => setIsRegisterModalOpen(true)}
             >
                 Register
-            </button>     
+            </button>
+          }
+
               
         </div>
         </div>
 
         {/* Hamburger menu (visible on mobile) */}
         <button
-          className="md:hidden text-white"
+          className="md:hidden text-black"
           onClick={toggleMobileMenu}
         >
           <span className="block w-6 h-1 bg-white mb-1"></span>
@@ -83,10 +90,10 @@ const Navbar = ({...props}) => {
 
       {/* Collapsible menu (only visible on mobile) */}
       <div className={`md:hidden ${isMobileMenuOpen ? "block" : "hidden"} bg-gray-800`}>
-        <a href="#" className="block text-white p-4">Home</a>
-        <a href="#" className="block text-white p-4">About</a>
-        <a href="#" className="block text-white p-4">Services</a>
-        <a href="#" className="block text-white p-4">Contact</a>
+        <a href="#" className="block text-black p-4">Home</a>
+        <a href="#" className="block text-black p-4">About</a>
+        <a href="#" className="block text-black p-4">Services</a>
+        <a href="#" className="block text-black p-4">Contact</a>
       </div>
     </div>
   );
