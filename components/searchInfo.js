@@ -54,11 +54,11 @@ export default function SearchInfo({ onSearch }) {
           placeholder="Enter food name"
           value={foodName}
           onChange={handleInputChange}
-          className="border p-2 rounded-md flex-grow"
+          className="border-2 border-gray-300 p-2 rounded-md flex-grow focus:outline-none focus:border-2 focus:border-black" // Lighter gray border by default, thinner black on focus
         />
         <button
           onClick={() => onSearch(foodName)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition duration-200"
         >
           Search
         </button>

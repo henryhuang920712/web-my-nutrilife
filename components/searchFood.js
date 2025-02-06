@@ -7,7 +7,6 @@ export default function SearchFoodPage() {
   const [selectedFood, setSelectedFood] = useState(null);
   const [nutrients, setNutrients] = useState([]);
 
-  // 當使用者按下 Search 按鈕時觸發查詢
   const handleSearch = async (foodName) => {
     try {
       const response = await fetch("/api/foodSearch", {
@@ -28,7 +27,6 @@ export default function SearchFoodPage() {
     }
   };
 
-  // 查詢營養成分
   const fetchNutrients = async (foodId, foodName) => {
     try {
       const response = await fetch("/api/nutrient", {
@@ -44,47 +42,153 @@ export default function SearchFoodPage() {
     }
   };
 
+  const categorizeNutrients = (nutrients) => {
+    const categories = {
+      基本營養素: ["熱量", "總碳水化合物", "粗蛋白", "粗脂肪"],
+      維生素: [
+        "維生素A總量(IU)",
+        "維生素B1",
+        "維生素B2",
+        "維生素B6",
+        "維生素B12",
+        "葉酸",
+        "菸鹼素",
+        "維生素E總量",
+      ],
+      礦物質: ["鈣", "鐵", "鈉", "鉀", "鋅", "磷", "鎂"],
+      脂肪與膽固醇: ["飽和脂肪", "膽固醇"],
+      其他營養素: ["胺基酸總量", "脂肪酸組成"],
+    };
+
+    const categorized = {
+      基本營養素: [],
+      維生素: [],
+      礦物質: [],
+      脂肪與膽固醇: [],
+      其他營養素: [],
+    };
+
+    nutrients.forEach((nutrient) => {
+      for (const category in categories) {
+        if (categories[category].includes(nutrient.n_name)) {
+          categorized[category].push(nutrient);
+          break;
+        }
+      }
+    });
+
+    return categorized;
+  };
+
+  const categorizedNutrients = categorizeNutrients(nutrients);
+
   return (
-    <div className="max-w-3xl mx-auto p-4 bg-white shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Search Food and View Nutrients</h2>
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-4xl font-bold text-center mb-6">營養成分查詢</h2>
+      <p className="text-center text-gray-600 mb-4 text-lg">
+        輸入食物名稱，獲取詳細的營養資訊
+      </p>
 
-      {/* 搜尋框與按鈕 */}
-      <SearchInfo onSearch={handleSearch} />
+      {/* 搜尋框 */}
+      <div className="flex justify-center items-center space-x-3 mb-6">
+        <SearchInfo
+          onSearch={handleSearch}
+          buttonClass="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+        />
+      </div>
 
-      {/* 營養素資訊表格 */}
+      {/* 營養資訊區塊 */}
       {selectedFood && (
-        <div className="mt-4">
-          <h3 className="text-lg font-semibold mb-2">
-            Nutrients in {selectedFood} (per 100g)
+        <div>
+          <h3 className="text-3xl font-semibold text-gray-800 text-center mb-6">
+            {selectedFood} 的營養成分 (每 100g)
           </h3>
-          <table className="w-full border-collapse border">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border p-2">Nutrient</th>
-                <th className="border p-2">Amount</th>
-                <th className="border p-2">Unit</th>
-              </tr>
-            </thead>
-            <tbody>
-              {nutrients.length > 0 ? (
-                nutrients.map((nutrient, index) => (
-                  <tr key={index} className="text-center">
-                    <td className="border p-2">{nutrient.n_name}</td>
-                    <td className="border p-2">
-                      {nutrient.n_amount_in_100g_f}
-                    </td>
-                    <td className="border p-2">{nutrient.n_unit}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="text-center p-2 text-gray-500">
-                    No nutrients found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* 基本營養素 + 脂肪與膽固醇 + 其他營養素 */}
+            <div className="bg-white shadow-lg rounded-xl p-8">
+              <h4 className="text-2xl font-semibold mb-4">基本營養素</h4>
+              <ul className="space-y-3">
+                {categorizedNutrients["基本營養素"].map((nutrient, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between border-b pb-2 hover:bg-gray-100 text-lg"
+                  >
+                    <span>{nutrient.n_name}</span>
+                    <span className="font-medium">
+                      {nutrient.n_amount_in_100g_f} {nutrient.n_unit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <h4 className="text-2xl font-semibold mt-6 mb-4">脂肪與膽固醇</h4>
+              <ul className="space-y-3">
+                {categorizedNutrients["脂肪與膽固醇"].map((nutrient, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between border-b pb-2 hover:bg-gray-100 text-lg"
+                  >
+                    <span>{nutrient.n_name}</span>
+                    <span className="font-medium">
+                      {nutrient.n_amount_in_100g_f} {nutrient.n_unit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <h4 className="text-2xl font-semibold mt-6 mb-4">其他營養素</h4>
+              <ul className="space-y-3">
+                {categorizedNutrients["其他營養素"].map((nutrient, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between border-b pb-2 hover:bg-gray-100 text-lg"
+                  >
+                    <span>{nutrient.n_name}</span>
+                    <span className="font-medium">
+                      {nutrient.n_amount_in_100g_f} {nutrient.n_unit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 維生素 */}
+            <div className="bg-white shadow-lg rounded-xl p-8">
+              <h4 className="text-2xl font-semibold mb-4">維生素</h4>
+              <ul className="space-y-3">
+                {categorizedNutrients["維生素"].map((nutrient, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between border-b pb-2 hover:bg-gray-100 text-lg"
+                  >
+                    <span>{nutrient.n_name}</span>
+                    <span className="font-medium">
+                      {nutrient.n_amount_in_100g_f} {nutrient.n_unit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 礦物質 */}
+            <div className="bg-white shadow-lg rounded-xl p-8">
+              <h4 className="text-2xl font-semibold mb-4">礦物質</h4>
+              <ul className="space-y-3">
+                {categorizedNutrients["礦物質"].map((nutrient, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between border-b pb-2 hover:bg-gray-100 text-lg"
+                  >
+                    <span>{nutrient.n_name}</span>
+                    <span className="font-medium">
+                      {nutrient.n_amount_in_100g_f} {nutrient.n_unit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       )}
     </div>
