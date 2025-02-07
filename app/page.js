@@ -6,29 +6,25 @@ import { Info } from "lucide-react";
 export default function Home({ setIsLoginModalOpen, setNavigatePath }) {
   return (
     <div>
-      <section className=" w-full h-[calc(100vh-4.5rem)] relative overflow-hidden flex bg-gradient-to-r from-blue-400 to-slate-100 ">
-
-        {/* background color */}
-        <div
-          className="absolute inset-0"
-          style={{
-            clipPath: 'ellipse(70% 10% at 50% 100%)',
-            background: 'white', // Customize gradient
-          }}
-        ></div>
-
-        <div className="w-1/3 h-full flex flex-col justify-center items-start relative ps-20">
-          <h1 className="text-white text-4xl font-semibold text-left py-2">
+      <section className=" w-full h-[calc(100vh-4.5rem)] relative overflow-hidden flex ">
+      <Image
+            src="/homepage/2.jpg"
+            alt="Description"
+            layout="fill"
+            objectFit="cover"
+          />
+        <div className="w-1/3 h-full flex flex-col justify-center items-start relative ps-20 font-kanit">
+          <h1 className="text-black text-4xl font-bold text-left py-2">
             Empowering Your Health Journey with Every Bite
           </h1>
-          <h3 className="text-white text-lg text-left py-2">
+          <h3 className="text-black text-lg text-left py-2">
             Track, Analyze, and Thrive with MyNutriLife
           </h3>
           <div className="mt-4 flex">
             <AuthProvider>
               <GetStartedButton setIsLoginModalOpen={setIsLoginModalOpen} setNavigatePath={setNavigatePath} />
             </AuthProvider>
-            <a href="#about" className="border-white border-2 font-semibold flex space-x-2 ml-4 text-white px-6 py-2 rounded-full hover:bg-white hover:text-black cursor-pointer transition-all">
+            <a href="#about" className="border-white border-2 font-semibold flex space-x-2 ml-4 text-black px-6 py-2 rounded-full hover:bg-black hover:text-white cursor-pointer transition-all">
               <Info />
               <p>
                 Learn more
@@ -114,7 +110,7 @@ export default function Home({ setIsLoginModalOpen, setNavigatePath }) {
 
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition-all"
+              className="w-full bg-blue-500 text-black py-3 rounded-md hover:bg-blue-600 transition-all"
             >
               Send Message
             </button>

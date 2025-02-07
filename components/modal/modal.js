@@ -8,7 +8,7 @@ function Modal({ isOpen, onClose, children }) {
         style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       >
         {/* Modal content */}
-        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md relative">
+        <div className="bg-white rounded-sm shadow-lg w-full max-w-3xl relative">
           <button
             className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
             onClick={onClose}

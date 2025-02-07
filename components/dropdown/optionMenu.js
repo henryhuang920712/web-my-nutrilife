@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
-import { usePathname } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation'
 
@@ -25,8 +24,8 @@ export default function OptionMenu() {
 
   return (
     <div className="relative text-black" ref={menuRef}>
-      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-md">
-      {session.user?.u_name} <ChevronDown className="w-4 h-4" />
+      <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300">
+      {session.user?.u_name[0].toUpperCase()}
       </button>
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-20">

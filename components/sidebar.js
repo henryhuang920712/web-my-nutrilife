@@ -4,8 +4,8 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 
 const categories = [
   {
-    name: "Analytics",
-    items: ["Overview", "Reports", "Trends"],
+    name: "Dashboard",
+    items: [],
   },
   {
     name: "Management",
@@ -29,21 +29,21 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-gray-900 text-white flex flex-col h-[calc(100vh-5rem)]">
+    <aside className="w-48 text-gray-800 flex flex-col h-[calc(100vh-5rem)] p-2">
       {/* Sidebar Header */}
-      <div className="p-4 text-xl font-bold border-b border-gray-700">
+      <div className="p-4 text-lg font-semibold">
         Dashboard
       </div>
 
       {/* Scrollable Menu (Custom Scrollable Div) */}
-      <div className="flex-1 overflow-y-auto p-2">
+      <div className="flex-1 overflow-y-auto p-2 text-sm">
         <nav>
           {categories.map((category, index) => (
             <div key={index} className="mb-2">
               {/* Category Header */}
               <button
                 onClick={() => toggleCategory(index)}
-                className="flex justify-between items-center w-full p-2 rounded-lg hover:bg-gray-800"
+                className="flex justify-between items-center w-full p-2 rounded-lg hover:bg-white hover:shadow-md"
               >
                 {category.name}
                 {openCategory === index ? (
@@ -69,7 +69,7 @@ export default function Sidebar() {
                   <li key={i}>
                     <a
                       href="#"
-                      className="block p-2 rounded-lg hover:bg-gray-700"
+                      className="block p-2 rounded-lg hover:bg-white hover:shadow-md"
                     >
                       {item}
                     </a>
@@ -79,13 +79,6 @@ export default function Sidebar() {
             </div>
           ))}
         </nav>
-      </div>
-
-      {/* Sidebar Footer */}
-      <div className="p-4 border-t border-gray-700">
-        <button className="w-full bg-red-600 hover:bg-red-700 py-2 rounded-lg">
-          Logout
-        </button>
       </div>
     </aside>
   );

@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Roboto } from "next/font/google";
+import { Geist, Geist_Mono, Roboto, Kanit } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./clientLayout";
 
@@ -16,6 +16,12 @@ const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "700"], // Specify font weights
   variable: "--font-roboto",
+});
+
+const kanit = Kanit({
+  subsets: ["latin"],
+  weight: ["400", "700"], // Specify font weights
+  variable: "--font-kanit",
 });
 
 const metadata = {
