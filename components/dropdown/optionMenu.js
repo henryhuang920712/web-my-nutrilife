@@ -23,7 +23,7 @@ export default function OptionMenu() {
   }, []);
 
   return (
-    <div className="relative text-black" ref={menuRef}>
+    <div className="relative text-black z-30" ref={menuRef}>
       <button onClick={() => setOpen(!open)} className="flex items-center gap-2 px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300">
       {session.user?.u_name[0].toUpperCase()}
       </button>

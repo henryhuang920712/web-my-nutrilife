@@ -39,6 +39,64 @@ export default function MealTracker() {
     }
     setLoading(false);
   };
+
+  const preloadUserMeals = async () => {
+    try {
+      // Send POST request to the API
+      const response = await fetch('/api/meal/list', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch meals');
+      }
+
+      // Parse the response if successful
+      const data = await response.json();
+
+      const nowMeals = data.map((row, index) => {
+        const [nowH, nowM, nowS] = row.time.split(":");
+        const nowTime = new Date();
+        nowTime.setHours(nowH, nowM, nowS);
+        const timeStr = nowTime.toLocaleTimeString('en-US', {
+          timeZone: 'Asia/Taipei', // Set the time zone to Taipei
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        const dateStr = new Intl.DateTimeFormat('zh-TW', {
+          timeZone: 'Asia/Taipei',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).format(nowTime).replace(/\//g, '-');
+
+        return {
+          rowId: index,
+          foodId: row.f_id,
+          foodName: row.f_name,
+          foodCategory: row.f_category,
+          formattedTime: nowTime,
+          dateStr,
+          timeStr,
+          grams: row.eaten_grams,
+        };
+      })
+
+      setMeals(nowMeals);
+
+      // sort meals by time
+      setMeals((prev) => prev.sort((a, b) => a.time - b.time));
+    } catch (error) {
+      console.error('Error fetching meals:', error);
+      alert('Error fetching meals');
+    }
+  };
+
+
   const handleInputChange = (e) => {
     const value = e.target.value;
     setFoodName(value);
@@ -49,16 +107,19 @@ export default function MealTracker() {
       setShowDropdown(false);
     } else {
       const filtered = foodData.filter((row) => {
-        return row.f_name.includes(value) || row.f_category.includes(value);
+        return row.f_name.includes(value);
       });
-      setSuggestions(filtered);
+
+      // limit the number of suggestions to 5
+      setSuggestions(filtered.slice(0, 5));
       setShowDropdown(filtered.length > 0); // Show dropdown only if there are suggestions
     }
   };
 
-
-  const handleSelect = (food) => {
-    setFoodCategory(food);
+  // selection of food item from dropdown
+  const handleSelect = ({ nowFoodName, nowFoodCategory }) => {
+    setFoodName(nowFoodName);
+    setFoodCategory(nowFoodCategory);
     setSuggestions([]);
     setShowDropdown(false);
   };
@@ -75,35 +136,82 @@ export default function MealTracker() {
 
   useEffect(() => {
     fetchFoodData();
+    preloadUserMeals();
   }, []);
 
 
-  const addMeal = (e) => {
+  const addMeal = async (e) => {
     e.preventDefault();
-    const id = meals.length; // Generate unique ID
-    if (!foodName || !foodCategory || !time || !grams) return alert("Please fill in all fields");
+    // find f_id from foodData
 
+    if (!foodName || !foodCategory || !time || !grams) return alert("Please fill in all fields");
+    // record index
+    const rowId = meals.length;
+    const foodId = foodData.find((row) => row.f_name === foodName)?.f_id;
     // Get the current date (or you can set a specific date)
     const formattedTime = new Date();
     const [hours, minutes] = time.split(":");
 
     // Set the time portion to the current date
-    formattedTime.setHours(hours);
-    formattedTime.setMinutes(minutes);
-    formattedTime.setSeconds(0); // Optionally reset seconds to 0
+    formattedTime.setHours(hours, minutes);
+    const dateStr = new Intl.DateTimeFormat('zh-TW', {
+      timeZone: 'Asia/Taipei',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(formattedTime).replace(/\//g, '-');
 
-    const timeStr = formattedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timeStr = formattedTime.toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Taipei', // Set the time zone to Taipei
+      hour12: false,
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    const newMeal = { rowId, foodId, foodName, foodCategory, formattedTime, dateStr, timeStr, grams };
 
-    const newMeal = { id, foodName, foodCategory, formattedTime, timeStr, grams };
-    setMeals([...meals, newMeal]); // Add new meal to list
+    try {
+      // Send POST request to the API
+      const response = await fetch('/api/meal/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ foodId, dateStr, timeStr, grams }),
+      });
 
-    // sort meals by time
-    setMeals((prev) => prev.sort((a, b) => a.formattedTime - b.formattedTime));
-    setFoodName("");
-    setFoodCategory("");
-    setTime("");
-    setGrams("");
-    setShowForm(false); // Close form after adding
+      if (!response.ok) {
+        throw new Error('Failed to add meal');
+      }
+
+      // Parse the response if successful
+      const data = await response.json();
+
+      // if message is "Updated existing meal"
+      if (data.message === "Updated existing meal") {
+        // find the index of the updated meal
+        const index = meals.findIndex((row) => row.foodId === foodId && row.dateStr === dateStr && row.timeStr === timeStr);
+        // update the meal record
+        setMeals((prev) => {
+          const updatedMeals = [...prev];
+          newMeal.rowId = index;
+          updatedMeals[index] = newMeal;
+          return updatedMeals;
+        });
+
+      } else {
+        setMeals([...meals, newMeal]); // Add new meal to list
+      }
+      // sort meals by time
+      setMeals((prev) => prev.sort((a, b) => a.formattedTime - b.formattedTime));
+      setFoodName("");
+      setFoodCategory("");
+      setTime("");
+      setGrams("");
+      setShowForm(false); // Close form after adding
+    } catch (error) {
+      console.error('Error adding meal:', error);
+      alert('Error adding meal');
+    }
   };
   // Toggle individual row selection
   const handleCheckboxChange = (id) => {
@@ -114,13 +222,36 @@ export default function MealTracker() {
 
   // Toggle "Select All" checkbox
   const handleSelectAll = () => {
-    setSelected(selected.length === meals.length ? [] : meals.map((row) => row.id));
+    setSelected(selected.length === meals.length ? [] : meals.map((row) => row.rowId));
   };
 
   // Remove selected rows
   const handleRemoveRows = () => {
-
-    setMeals((prev) => prev.filter((row) => !selected.includes(row.id)));
+    console.log(meals);
+    meals.forEach((row, index) => {
+      if (selected.includes(row.rowId)) {
+        console.log('Deleting meal:', row);
+        // Send DELETE request to the API
+        fetch('/api/meal/delete', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ foodId: row.foodId, dateStr: row.dateStr, timeStr: row.timeStr }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to delete meal');
+            }
+            console.log('Meal deleted successfully:', row);
+          })
+          .catch((error) => {
+            console.error('Error deleting meal:', error);
+            alert('Error deleting meal');
+          });
+      }
+    });
+    setMeals((prev) => prev.filter((row) => !selected.includes(row.rowId)));
     setSelected([]); // Clear selection
   };
 
@@ -201,13 +332,13 @@ export default function MealTracker() {
                   <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-10">
                     {suggestions.length > 0 ? (
                       // suggestions: f_id, f_name, f_category
-                      suggestions.map(({ f_name: food }, index) => (
+                      suggestions.map(({ f_name: nowFoodName, f_category: nowFoodCategory }, index) => (
                         <li
                           key={index}
-                          onClick={() => handleSelect(food)}
+                          onClick={() => handleSelect({ nowFoodName, nowFoodCategory })} // Set the selected food name
                           className="p-2 cursor-pointer hover:bg-gray-100"
                         >
-                          {food}
+                          {nowFoodName}
                         </li>
                       ))
                     ) : (
