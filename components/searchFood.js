@@ -1,13 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import SearchInfo from "./searchInfo";
 
 export default function SearchFoodPage() {
   const [selectedFood, setSelectedFood] = useState(null);
   const [nutrients, setNutrients] = useState([]);
+  const [query, setQuery] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.isReady) {
+      const queryParam = router.query.query;
+      setQuery(queryParam || "");
+      handleSearch(queryParam || "");
+    }
+  }, [router.isReady, router.query]);
 
   const handleSearch = async (foodName) => {
+    if (!foodName) return;
     try {
       const response = await fetch("/api/foodSearch", {
         method: "POST",
