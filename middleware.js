@@ -14,5 +14,9 @@ export async function middleware(req) {
 
 // Protect specific routes
 export const config = {
-    matcher: ['/dashboard', '/dashboard/:path*'], // Protects /dashboard and its subroutes
+    matcher: [
+        '/dashboard', '/dashboard/:path*',
+        '/record', '/record/:path*',
+
+    ], // Protects /dashboard and its subroutes
 };

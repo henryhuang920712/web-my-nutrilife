@@ -6,6 +6,10 @@ import bcrypt from "bcrypt";
 import pool from "@/lib/db";
 
 export const options = {
+    session: {
+        jwt: true,
+        maxAge:  24 *60 * 60 // 24 hours
+    },
     providers: [
         // GoogleProvider({
         //     profile(profile) {
@@ -48,7 +52,7 @@ export const options = {
 
                     const foundUser = result.rows[0];
 
-                    console.log(result.rows[0])
+                    // console.log(result.rows[0])
 
                     if (!foundUser) {
                         throw new Error("User not found");

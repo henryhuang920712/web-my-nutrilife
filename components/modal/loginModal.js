@@ -46,6 +46,8 @@ const LoginModal = ({ isModalOpen, setIsModalOpen, navigateToRegister, navigateP
                         // reload the page
                         if (navigatePath) {
                             redirect(navigatePath);
+                            // refresh
+                            
                         } else {
                             window.location.reload();
                         }

@@ -1,5 +1,6 @@
 import Sidebar from "@/components/sidebar";
 import { CaloriesPeriod } from "@/components/charts/caloriesPeriodBar";
+import DailyProgress from "@/components/charts/dailyProgress";
 export default function Dashboard() {
     return (
         <div className="flex bg-gray-100">
@@ -7,7 +8,8 @@ export default function Dashboard() {
             <main className="flex-1 p-4">
                 <h1 className="text-2xl font-semibold">Dashboard</h1>
                 <p className="text-gray-500">Welcome back, John Doe!</p>
-                <CaloriesPeriod />
+                <DailyProgress />
+                {/* <CaloriesPeriod /> */}
             </main>
         </div>
     );
