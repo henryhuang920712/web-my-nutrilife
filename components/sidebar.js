@@ -38,7 +38,20 @@ export default function Sidebar() {
       {/* Scrollable Menu (Custom Scrollable Div) */}
       <div className="flex-1 overflow-y-auto p-2 text-sm">
         <nav>
-          {categories.map((category, index) => (
+          {categories.map((category, index) => {
+
+            
+            return (
+              category.items.length === 0 ?
+              <div key={index} className="mb-2">
+              <a
+                href="/dashboard"
+                className="flex justify-between items-center w-full p-2 rounded-lg hover:bg-white hover:shadow-md"
+              >
+                {category.name}
+              </a>
+              </div>            
+            :
             <div key={index} className="mb-2">
               {/* Category Header */}
               <button
@@ -55,11 +68,10 @@ export default function Sidebar() {
 
               {/* Category Items with Animation */}
               <ul
-                className={`ml-4 mt-1 space-y-1 transition-all duration-300 ease-in-out ${
-                  openCategory === index
+                className={`ml-4 mt-1 space-y-1 transition-all duration-300 ease-in-out ${openCategory === index
                     ? "opacity-100 scale-y-100 max-h-screen"
                     : "opacity-0 scale-y-0 max-h-0 overflow-hidden"
-                }`}
+                  }`}
                 style={{
                   transformOrigin: "top",
                   transition: "transform 0.3s ease-out, opacity 0.3s ease-out, max-height 0.3s ease-out",
@@ -76,8 +88,9 @@ export default function Sidebar() {
                   </li>
                 ))}
               </ul>
-            </div>
-          ))}
+            </div>)
+          }
+          )}
         </nav>
       </div>
     </aside>

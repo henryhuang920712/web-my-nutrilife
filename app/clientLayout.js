@@ -6,7 +6,7 @@ import LoginModal from '@/components/modal/loginModal';
 import RegisterModal from '@/components/modal/registerModal';
 import AuthProvider from '@/components/authProvider';
 import { usePathname } from 'next/navigation'
-
+import Sidebar from "@/components/sidebar";
 import Home from './page';
 export default function ClientLayout({ children }) {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -21,7 +21,13 @@ export default function ClientLayout({ children }) {
                 <Navbar isLoginModalOpen={isLoginModalOpen} setIsLoginModalOpen={setIsLoginModalOpen}
                     isRegisterModalOpen={isRegisterModalOpen} setIsRegisterModalOpen={setIsRegisterModalOpen} />
             </AuthProvider>
-            {pathName === '/' ? <Home setIsLoginModalOpen={setIsLoginModalOpen} setNavigatePath={setNavigatePath} /> : children}
+            {pathName === '/' ? <Home setIsLoginModalOpen={setIsLoginModalOpen} setNavigatePath={setNavigatePath} />
+             : 
+             <div className="flex bg-gray-100">
+             <Sidebar />
+              {children}
+              </div>
+            }
             <LoginModal isModalOpen={isLoginModalOpen} setIsModalOpen={setIsLoginModalOpen}
                 navigateToRegister={() => { setIsLoginModalOpen(false); setIsRegisterModalOpen(true); }}
                 navigatePath={navigatePath} />

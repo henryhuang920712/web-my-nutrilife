@@ -21,17 +21,21 @@ export async function POST(req) {
         // Query to fetch meals for today
         const query = `
             SELECT 
-                nutrient.n_id,
-                nutrient.n_name,
-                nutrient.n_unit,
-                daily_n_consumed.n_consumed_amount,
-                dri.sugg_n_amount
-            FROM nutrient
-            JOIN daily_n_consumed ON nutrient.n_id = daily_n_consumed.n_id
-            JOIN dri ON nutrient.n_id = dri.n_id
-            WHERE daily_n_consumed.u_id = $1 
-            AND daily_n_consumed.date BETWEEN $2 AND $3
-            AND dri.t_id = $4;
+                n.n_id,
+                n.n_name,
+                n.n_unit,
+                ROUND(COALESCE(SUM(dnc.n_consumed_amount), 0), 2) AS n_consumed_amount,
+                COALESCE(SUM(d.sugg_n_amount), 0) AS n_sugg_amount
+            FROM nutrient n
+            LEFT JOIN daily_n_consumed dnc 
+                ON n.n_id = dnc.n_id 
+                AND dnc.u_id = $1
+                AND dnc.date BETWEEN $2 AND $3
+            LEFT JOIN dri d 
+                ON n.n_id = d.n_id 
+                AND d.t_id = $4
+            GROUP BY n.n_id, n.n_name, n.n_unit
+            ORDER BY n.n_id;
         `;
 
         // Fetch data from the database

@@ -1,15 +1,19 @@
-import Sidebar from "@/components/sidebar";
-import { CaloriesPeriod } from "@/components/charts/caloriesPeriodBar";
-import DailyProgress from "@/components/charts/dailyProgress";
+
+
+
+import { CaloriesPeriod } from "@/components/dashboard/charts/caloriesPeriodBar";
+import DailyProgress from "@/components/dashboard/charts/dailyProgress";
+import DailyComposition from "@/components/dashboard/charts/dailyComposition"
+import { DailyIntakeProvider } from "@/components/dashboard/dailyIntakeProvider";
 export default function Dashboard() {
     return (
         <div className="flex bg-gray-100">
-            <Sidebar />
             <main className="flex-1 p-4">
-                <h1 className="text-2xl font-semibold">Dashboard</h1>
-                <p className="text-gray-500">Welcome back, John Doe!</p>
+                <DailyIntakeProvider>
+                <h1 className="text-3xl font-semibold mb-4">Dashboard</h1>
                 <DailyProgress />
-                {/* <CaloriesPeriod /> */}
+                <DailyComposition />
+                </DailyIntakeProvider>
             </main>
         </div>
     );
