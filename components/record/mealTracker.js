@@ -2,8 +2,13 @@
 
 
 import { useState, useEffect } from "react";
-
+import { ScrollArea } from "@/components/ui/scroll-area"
+import DatePicker from "../calendar/datePicker";
+import dayjs from "dayjs";
 export default function MealTracker() {
+  const currentDate = dayjs();
+  const [nowDate, setNowDate] = useState( currentDate.format("YYYY-MM-DD"));
+
   const [meals, setMeals] = useState([]); // Store meal records
   const [showForm, setShowForm] = useState(false);
   const [foodName, setFoodName] = useState("");
@@ -67,12 +72,15 @@ export default function MealTracker() {
           hour: '2-digit',
           minute: '2-digit'
         });
-        const dateStr = new Intl.DateTimeFormat('zh-TW', {
-          timeZone: 'Asia/Taipei',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        }).format(nowTime).replace(/\//g, '-');
+        // const dateStr = new Intl.DateTimeFormat('zh-TW', {
+        //   timeZone: 'Asia/Taipei',
+        //   year: 'numeric',
+        //   month: '2-digit',
+        //   day: '2-digit'
+        // }).format(nowTime).replace(/\//g, '-');
+        
+        // output nowDate in form of 'YYYY-MM-DD'
+        const dateStr = nowDate;
 
         return {
           rowId: index,
@@ -111,7 +119,7 @@ export default function MealTracker() {
       });
 
       // limit the number of suggestions to 5
-      setSuggestions(filtered.slice(0, 5));
+      setSuggestions(filtered.slice(0, 10));
       setShowDropdown(filtered.length > 0); // Show dropdown only if there are suggestions
     }
   };
@@ -258,11 +266,23 @@ export default function MealTracker() {
 
   // Fetch food items from the database
 
-
+  useEffect(() => {
+    console.log(nowDate);
+    
+  }, [nowDate]);
 
   return (
     <div className="max-w-3xl mx-auto p-4 bg-white shadow-md rounded-lg text-center">
       <h2 className="text-xl font-bold mb-4">Daily Meal Tracker</h2>
+
+      <DatePicker
+        fieldName="nowDate"
+        value={nowDate}
+        setFieldValue={setNowDate}
+        className="border border-gray-300 rounded p-2 text-sm input-container"
+        useFormik={false}
+      />
+
       {selected.length > 0 && (
         <div className="mb-4 flex items-center gap-2">
           <button
@@ -329,7 +349,8 @@ export default function MealTracker() {
                 />
                 {/* Dropdown */}
                 {showDropdown && (
-                  <ul className="absolute left-0 right-0 mt-1 bg-white border rounded-md shadow-lg z-10">
+                  <ScrollArea className="absolute h-72 w-full rounded-md border shadow-lg bg-white z-10">
+                  <ul className=" left-0 right-0 mt-1">
                     {suggestions.length > 0 ? (
                       // suggestions: f_id, f_name, f_category
                       suggestions.map(({ f_name: nowFoodName, f_category: nowFoodCategory }, index) => (
@@ -345,6 +366,7 @@ export default function MealTracker() {
                       <li className="p-2 text-gray-500">No results found</li>
                     )}
                   </ul>
+                  </ScrollArea>
                 )}
 
               </td>

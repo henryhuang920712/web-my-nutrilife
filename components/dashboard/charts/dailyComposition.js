@@ -1,89 +1,136 @@
 "use client"
 
 import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+
+import { Bar, BarChart, CartesianGrid, YAxis, XAxis } from "recharts"
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+
 } from "@/components/ui/chart"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useDailyIntake } from '../dailyIntakeProvider';
-
-const chartData = [
-  { browser: "chrome", visitors: 275, a: 53},
-  { browser: "safari", visitors: 200, a: 53 },
-  { browser: "firefox", visitors: 187, a: 53},
-  { browser: "edge", visitors: 173, a: 53},
-  { browser: "other", visitors: 90, a: 53},
-]
+import { useState, useEffect } from "react";
 
 
-
-const chartConfig = {
-  visitors: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-  a: {
-    label: "Mobile",
-    color: "hsl(var(--chart-2))",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "hsl(var(--chart-1))",
-  },
-  safari: {
-    label: "Safari",
-    color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
-  },
+const nutrients = {
+  "minerals": [12, 13, 14, 15, 16, 17, 18, 19, 20],
+  "fat-soluble\nvitamins": [22, 30, 31, 32],
+  "water-soluble\nvitamins": [23, 24, 25, 26, 27, 28, 29],
+  "others": [9, 11]
 }
 
-export default function DailyComposition({ }) {
-  const dailyIntake = useDailyIntake();
+const CustomBackground = (props) => {
+  const { x, y, width, height, radius } = props;
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[100px] mt-4" >
-      <div className="px-4 rounded-2xl shadow-sm bg-white flex gap-4 items-center p-2">
-        <ChartContainer config={chartConfig} className="w-full h-full">
-          <BarChart
-            accessibilityLayer
-            data={chartData}
-            layout="vertical"
-            margin={{
-              left: 0,
-            }}
-          >
-            <YAxis
-              dataKey="browser"
-              type="category"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) =>
-                chartConfig[value]?.label
-              }
-            />
-            <XAxis dataKey="visitors" type="number" hide />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Bar dataKey="visitors" stackId="b" layout="vertical" fill="var(--color-desktop)" radius={[0, 0, 4, 4]} />
-            <Bar dataKey="a" stackId="b" layout="vertical" fill="var(--color-desktop)" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ChartContainer>
+    <rect
+      x={x}
+      y={y}
+      width={width}
+      height={height}
+      rx={radius} // Rounded corners
+      ry={radius}
+      fill="#eee" // Background color
+    />
+  );
+};
+
+
+export default function DailyComposition({ }) {
+  const [chartData, setChartData] = useState(null);
+  const dailyIntake = useDailyIntake();
+
+  const chartConfig = {
+    nutrients: {
+      label: "Nutrients"
+    },
+    value: {
+      label: "Value"
+    },
+  }
+
+  useEffect(() => {
+    const nowChartData = Object.keys(nutrients).reduce((acc, key) => {
+      acc[key] = dailyIntake
+        ?.filter((item) => nutrients[key].includes(item.n_id))
+        .map((item) => ({
+          nutrients: item.n_name.replace(/總量.*/, ""),
+          value: parseFloat(item.n_consumed_amount),
+          fill: "var(--color-chrome)",
+        }));
+      return acc;
+    }, {});
+
+    setChartData(nowChartData);
+
+    console.log(dailyIntake);
+    
+  }, [dailyIntake]);
+
+
+
+  return (
+    <div className="col-span-1" >
+      <div className="rounded-lg bg-white" >
+      <Tabs defaultValue="minerals" className="" >
+        <TabsList className={`grid w-full grid-cols-4 items-stretch pb-20`}>
+          {Object.keys(nutrients).map((key) => (
+            chartData ? (  // Ensure it's not just an empty object/array
+              <TabsTrigger value={key} key={key} className="text-center whitespace-pre-line py-2">
+                <TrendingUp size={24} />
+                {key}
+              </TabsTrigger>
+            ) : (
+              <Skeleton key={key} className="h-4 w-[250px]" />
+            )
+          ))}
+
+
+        </TabsList>
+        {Object.keys(nutrients).map((key) => (
+          chartData && (
+            <TabsContent value={key} key={key} className="rounded-lg bg-white p-4">
+              <ChartContainer config={chartConfig}>
+                <BarChart
+                  accessibilityLayer
+                  data={chartData[key]}
+                  layout="vertical"
+                  barSize={12}
+                  margin={{
+                    left: 8,
+                    right: 8,
+                  }}
+                >
+                  <YAxis
+                    dataKey="nutrients"
+                    type="category"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                    interval={0} // Forces all labels to show
+                  />
+                  <XAxis type="number" hide />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent hideLabel />}
+                  />
+                  <Bar
+                    dataKey="value"
+                    stackId="b"
+                    radius={4}
+                    background={<CustomBackground radius={4} />}
+                  />
+                </BarChart>
+              </ChartContainer>
+            </TabsContent>
+          )
+        ))}
+      </Tabs>
       </div>
     </div>
   )

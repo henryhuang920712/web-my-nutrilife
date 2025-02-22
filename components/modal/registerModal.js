@@ -200,6 +200,7 @@ const RegisterModal = ({ isModalOpen, setIsModalOpen }) => {
                             fieldName="birthday" // Name of the field in Formik
                             value={formik.values.birthday} // Current value from Formik's state
                             setFieldValue={formik.setFieldValue} // Update Formik's state
+                            className="border border-gray-300 rounded p-2 input-container"
                         />
                         {/* Modal Display */}
                         {response && (

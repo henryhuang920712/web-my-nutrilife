@@ -1,4 +1,4 @@
-import MealTracker from "@/components/mealTracker";
+import MealTracker from "@/components/record/mealTracker";
 
 export default function Record() {
 

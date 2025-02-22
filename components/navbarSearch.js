@@ -46,13 +46,13 @@ export default function NavbarSearch() {
   const handleSelect = (selectedFood) => {
     setSearchQuery(selectedFood.f_name);
     setShowDropdown(false);
-    router.push(`/search?query=${encodeURIComponent(selectedFood.f_name)}`);
+    router.push(`/search?foodName=${encodeURIComponent(selectedFood.f_name)}`);
   };
 
   const handleSearchKeyPress = (e) => {
     if (e.key === "Enter" && searchQuery.trim() !== "") {
       setShowDropdown(false);
-      router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
+      router.push(`/search?foodName=${encodeURIComponent(searchQuery)}`);
     }
   };
 

@@ -1,43 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import SearchInfo from "./searchInfo";
 
 export default function SearchFoodPage() {
   const [selectedFood, setSelectedFood] = useState(null);
   const [nutrients, setNutrients] = useState([]);
-  const [query, setQuery] = useState("");
-  const router = useRouter();
-
-  useEffect(() => {
-    if (router.isReady) {
-      const queryParam = router.query.query;
-      setQuery(queryParam || "");
-      handleSearch(queryParam || "");
-    }
-  }, [router.isReady, router.query]);
-
-  const handleSearch = async (foodName) => {
-    if (!foodName) return;
-    try {
-      const response = await fetch("/api/foodSearch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ foodName }),
-      });
-      const data = await response.json();
-
-      if (data.length > 0) {
-        fetchNutrients(data[0].f_id, data[0].f_name);
-      } else {
-        setSelectedFood(null);
-        setNutrients([]);
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-    }
-  };
+  const searchParams = useSearchParams();
+  const foodName = searchParams.get("foodName");
 
   const fetchNutrients = async (foodId, foodName) => {
     try {
@@ -94,6 +65,14 @@ export default function SearchFoodPage() {
 
   const categorizedNutrients = categorizeNutrients(nutrients);
 
+  useEffect(() => {
+    if (foodName) {
+      console.log(foodName);
+      fetchNutrients(1, foodName);
+    }
+  }
+  , [foodName]);
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-4xl font-bold text-center mb-6">營養成分查詢</h2>
@@ -102,12 +81,12 @@ export default function SearchFoodPage() {
       </p>
 
       {/* 搜尋框 */}
-      <div className="flex justify-center items-center space-x-3 mb-6">
+      {/* <div className="flex justify-center items-center space-x-3 mb-6">
         <SearchInfo
           onSearch={handleSearch}
           buttonClass="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
         />
-      </div>
+      </div> */}
 
       {/* 營養資訊區塊 */}
       {selectedFood && (
