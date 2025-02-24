@@ -10,6 +10,26 @@ export default function SearchFoodPage() {
   const searchParams = useSearchParams();
   const foodName = searchParams.get("foodName");
 
+  const handleSearch = async (foodName) => {
+    try {
+      const response = await fetch("/api/foodSearch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ foodName }),
+      });
+      const data = await response.json();
+
+      if (data.length > 0) {
+        fetchNutrients(data[0].f_id, data[0].f_name);
+      } else {
+        setSelectedFood(null);
+        setNutrients([]);
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+    }
+  };
+
   const fetchNutrients = async (foodId, foodName) => {
     try {
       const response = await fetch("/api/nutrient", {
@@ -70,23 +90,22 @@ export default function SearchFoodPage() {
       console.log(foodName);
       fetchNutrients(1, foodName);
     }
-  }
-  , [foodName]);
+  }, [foodName]);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl w-full mx-auto p-6 overflow-hidden">
       <h2 className="text-4xl font-bold text-center mb-6">營養成分查詢</h2>
       <p className="text-center text-gray-600 mb-4 text-lg">
         輸入食物名稱，獲取詳細的營養資訊
       </p>
 
       {/* 搜尋框 */}
-      {/* <div className="flex justify-center items-center space-x-3 mb-6">
+      <div className="flex justify-center items-center space-x-3 mb-6">
         <SearchInfo
           onSearch={handleSearch}
           buttonClass="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
         />
-      </div> */}
+      </div>
 
       {/* 營養資訊區塊 */}
       {selectedFood && (
