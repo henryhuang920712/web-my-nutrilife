@@ -66,6 +66,8 @@ export default function MealTracker() {
 
       const data = await response.json();
 
+      const nowDate = new Date().toISOString().split("T")[0];
+
       const nowMeals = data.map((row, index) => {
         const [nowH, nowM, nowS] = row.time.split(":");
         const nowTime = new Date();
@@ -84,7 +86,7 @@ export default function MealTracker() {
           foodName: row.f_name,
           foodCategory: row.f_category,
           formattedTime: nowTime,
-          dateStr,
+          dateStr: nowDate,
           timeStr,
           grams: row.eaten_grams,
         };
@@ -315,6 +317,8 @@ export default function MealTracker() {
                       }
                     />
                   </th>
+                  {/* 新增日期欄位 */}
+                  <th className="p-4 text-left font-medium">Date</th>{" "}
                   <th className="p-4 text-left font-medium">
                     <div className="flex items-center gap-2">
                       <Utensils className="w-4 h-4" />
@@ -351,6 +355,8 @@ export default function MealTracker() {
                           onChange={() => handleCheckboxChange(index)}
                         />
                       </td>
+                      {/* 顯示日期 */}
+                      <td className="p-4 font-medium">{meal.dateStr}</td>{" "}
                       <td className="p-4 font-medium">{meal.foodName}</td>
                       <td className="p-4 text-muted-foreground">
                         {meal.foodCategory}
@@ -373,6 +379,18 @@ export default function MealTracker() {
                 {showForm && (
                   <tr className="border-b bg-muted/30">
                     <td className="p-4"></td>
+                    {/* 加上日期 */}
+                    <td className="p-4">
+                      <div className="flex justify-center">
+                        <DatePicker
+                          fieldName="nowDate"
+                          value={nowDate}
+                          setFieldValue={setNowDate}
+                          className="w-48"
+                          useFormik={false}
+                        />
+                      </div>
+                    </td>
                     <td className="p-4 dropdown-container relative">
                       <Input
                         type="text"
@@ -417,6 +435,7 @@ export default function MealTracker() {
                         </ScrollArea>
                       )}
                     </td>
+
                     <td className="p-4 text-muted-foreground">
                       {foodCategory || "--"}
                     </td>
