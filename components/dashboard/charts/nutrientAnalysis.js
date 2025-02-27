@@ -51,8 +51,8 @@ function getDateRange(startDate, endDate) {
 
 export default function NutrientAnalysis() {
   const currentDate = dayjs();
-  const [startDate, setStartDate] = useState( currentDate.format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState( currentDate.format("YYYY-MM-DD"));
+  const [startDate, setStartDate] = useState(currentDate.format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(currentDate.format("YYYY-MM-DD"));
   const [nutrient, setNutrient] = useState("熱量");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -84,7 +84,7 @@ export default function NutrientAnalysis() {
         });
         console.log(nowChartData);
         setData(nowChartData);
-      
+
       } else {
         console.error("Error:", result.message);
       }
@@ -99,94 +99,99 @@ export default function NutrientAnalysis() {
 
   return (
     <div className="p-4 col-span-2 bg-white rounded shadow-md">
-      <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
-        <div className="flex gap-1 flex-col items-start">
-        <h6 className="text-sm font-semibold">Start</h6>
-        <DatePicker
-          fieldName="startDate" // Optional, just for identification
-          value={startDate} // Pass the current value (local state)
-          setFieldValue={setStartDate} // Pass the setter function (to update the local state)
-          useFormik={false} // Optional, default is true
-          className="border border-gray-300 rounded p-2 input-container text-sm w-auto"
-        />
+      <div>
+        <div>
+          <h5 className="text-base font-semibold mb-2">Nutrient Analysis</h5>
         </div>
-        <div className="flex gap-1 flex-col items-start">
-        <h6 className="text-sm font-semibold">End</h6>
-        <DatePicker
-          fieldName="endDate" // Optional, just for identification
-          value={endDate} // Pass the current value (local state)
-          setFieldValue={setEndDate} // Pass the setter function (to update the local state)
-          useFormik={false} // Optional, default is true
-          className="border border-gray-300 rounded p-2 input-container text-sm w-auto"
-        />
-        </div>
-        <div className="flex gap-1 flex-col items-start flex-grow">
-        <h6 className="text-sm font-semibold">Nutrient</h6>
-        <div className="flex justify-between w-full gap-2">
-        <Select onValueChange={(value) => setNutrient(value)} className="border border-gray-300 rounded p-2">
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a Nutrient" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Nutrients</SelectLabel>
-              {nutrientOptions.map((item) => (
-                <SelectItem key={item} value={item}>
-                  {item}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <button
-          onClick={fetchNutrientData}
-          disabled={loading}
-          className="px-8 rounded-full bg-white border border-gray-300 hover:bg-gray-100 transition-colors" 
-        >
-          {loading ? "載入中..." : "查詢"}
-        </button>
-        </div>
+        <div className="flex md:flex-row gap-8 items-center justify-between w-full">
+          <div className="flex gap-1 flex-col items-start">
+            <h6 className="text-sm font-semibold">Start</h6>
+            <DatePicker
+              fieldName="startDate" // Optional, just for identification
+              value={startDate} // Pass the current value (local state)
+              setFieldValue={setStartDate} // Pass the setter function (to update the local state)
+              useFormik={false} // Optional, default is true
+              className=" rounded p-2 text-sm w-auto"
+            />
+          </div>
+          <div className="flex gap-1 flex-col items-start">
+            <h6 className="text-sm font-semibold">End</h6>
+            <DatePicker
+              fieldName="endDate" // Optional, just for identification
+              value={endDate} // Pass the current value (local state)
+              setFieldValue={setEndDate} // Pass the setter function (to update the local state)
+              useFormik={false} // Optional, default is true
+              className="rounded p-2 text-sm w-auto"
+            />
+          </div>
+          <div className="flex flex-col items-start w-full">
+            <h6 className="text-sm font-semibold pb-2">Nutrient</h6>
+            <div className="flex justify-between w-full gap-2">
+              <Select onValueChange={(value) => setNutrient(value)} className="w-full">
+                <SelectTrigger className="w-1/2">
+                  <SelectValue placeholder="Select a Nutrient" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Nutrients</SelectLabel>
+                    {nutrientOptions.map((item) => (
+                      <SelectItem key={item} value={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <button
+                onClick={fetchNutrientData}
+                disabled={loading}
+                className="px-8 rounded-full bg-white border border-gray-300 hover:bg-gray-100 transition-colors"
+              >
+                {loading ? "載入中..." : "查詢"}
+              </button>
+            </div>
+          </div>
+
         </div>
 
-      </div>
-
-      <div className="mt-6 h-80">
-      <ChartContainer config={chartConfig} className="h-full w-full">
-          <AreaChart
-            accessibilityLayer
-            data={data}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
-            <Area
-              dataKey="consumedAmount"
-              type="natural"
-              fill="var(--color-consumedAmount)"
-              fillOpacity={0.4}
-              stroke="var(--color-consumedAmount)"
-              stackId="a"
-            />
-            <Area
-              dataKey="suggestedAmount"
-              type="natural"
-              fill="var(--color-suggestedAmount)"
-              fillOpacity={0.4}
-              stroke="var(--color-suggestedAmount)"
-              stackId="a"
-            />
-          </AreaChart>
-        </ChartContainer>
+        <div className="mt-6 h-80">
+          <ChartContainer config={chartConfig} className="h-full w-full">
+            <AreaChart
+              accessibilityLayer
+              data={data}
+              margin={{
+                left: 12,
+                right: 12,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                tickFormatter={(value) => value}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+              <Area
+                dataKey="consumedAmount"
+                type="natural"
+                fill="var(--color-consumedAmount)"
+                fillOpacity={0.4}
+                stroke="var(--color-consumedAmount)"
+                stackId="a"
+              />
+              <Area
+                dataKey="suggestedAmount"
+                type="natural"
+                fill="var(--color-suggestedAmount)"
+                fillOpacity={0.4}
+                stroke="var(--color-suggestedAmount)"
+                stackId="a"
+              />
+            </AreaChart>
+          </ChartContainer>
+        </div>
       </div>
     </div>
   );

@@ -2,8 +2,9 @@
 import DailyProgress from "@/components/dashboard/charts/dailyProgress";
 import DailyComposition from "@/components/dashboard/charts/dailyComposition"
 import { DailyIntakeProvider } from "@/components/dashboard/dailyIntakeProvider";
-
 import NutrientAnalysis from "@/components/dashboard/charts/nutrientAnalysis";
+import RecordView from "@/components/dashboard/charts/recordView";
+
 export default function Dashboard() {
     return (
         <div className="flex bg-gray-100">
@@ -16,7 +17,9 @@ export default function Dashboard() {
                 <DailyComposition />
                 </div>
                 </DailyIntakeProvider>
-                
+                <div className="grid grid-cols-3 mt-4 gap-4" >
+                <RecordView />
+                </div>
             </main>
         </div>
     );

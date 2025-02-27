@@ -187,19 +187,19 @@ export default function DatePicker({ fieldName, value, setFieldValue, className,
     };
 
     return (
-        <div className="relative">
+        <div className="relative flex items-center border rounded-md p-2">
             <input
                 type="text"
                 placeholder="Select your birthday"
-                onFocus={() => { setIsDatePickerVisible(true); }}
-                className={className}
+                onFocus={() => { setIsDatePickerVisible(true);}}
+                className={`input-container ${className}`}
                 value={selectDate.format("YYYY-MM-DD")}
                 readOnly
             />
 
             {/* Calendar Icon */}
             <Calendar
-                className="absolute top-2 right-2 text-gray-500 cursor-pointer"
+                className="text-gray-500 cursor-pointer ps-1"
                 onClick={() => setIsDatePickerVisible(true)} // Show the date picker when clicked
                 size={20} // Adjust the size as needed
             />

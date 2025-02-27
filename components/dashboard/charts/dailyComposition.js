@@ -69,68 +69,71 @@ export default function DailyComposition({ }) {
     setChartData(nowChartData);
 
     console.log(dailyIntake);
-    
+
   }, [dailyIntake]);
 
 
 
   return (
-    <div className="col-span-1" >
-      <div className="rounded-lg bg-white" >
-      <Tabs defaultValue="minerals" className="" >
-        <TabsList className={`grid w-full grid-cols-4 items-stretch pb-20`}>
+    <div className="p-4 col-span-1 bg-white rounded shadow-md">
+      <div>
+        <div>
+          <h5 className="text-base font-semibold mb-2">Daily Composition</h5>
+        </div>
+        <Tabs defaultValue="minerals" className="" >
+          <TabsList className={`grid w-full grid-cols-4 items-stretch pb-20`}>
+            {Object.keys(nutrients).map((key) => (
+              chartData ? (  // Ensure it's not just an empty object/array
+                <TabsTrigger value={key} key={key} className="text-center whitespace-pre-line py-2">
+                  <TrendingUp size={24} />
+                  {key}
+                </TabsTrigger>
+              ) : (
+                <Skeleton key={key} className="h-4 w-[250px]" />
+              )
+            ))}
+
+
+          </TabsList>
           {Object.keys(nutrients).map((key) => (
-            chartData ? (  // Ensure it's not just an empty object/array
-              <TabsTrigger value={key} key={key} className="text-center whitespace-pre-line py-2">
-                <TrendingUp size={24} />
-                {key}
-              </TabsTrigger>
-            ) : (
-              <Skeleton key={key} className="h-4 w-[250px]" />
+            chartData && (
+              <TabsContent value={key} key={key} className="rounded-lg bg-white p-4">
+                <ChartContainer config={chartConfig}>
+                  <BarChart
+                    accessibilityLayer
+                    data={chartData[key]}
+                    layout="vertical"
+                    barSize={12}
+                    margin={{
+                      left: 8,
+                      right: 8,
+                    }}
+                  >
+                    <YAxis
+                      dataKey="nutrients"
+                      type="category"
+                      tickLine={false}
+                      tickMargin={10}
+                      axisLine={false}
+                      interval={0} // Forces all labels to show
+                    />
+                    <XAxis type="number" hide />
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Bar
+                      dataKey="value"
+                      stackId="b"
+                      radius={4}
+                      background={<CustomBackground radius={4} />}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </TabsContent>
             )
           ))}
-
-
-        </TabsList>
-        {Object.keys(nutrients).map((key) => (
-          chartData && (
-            <TabsContent value={key} key={key} className="rounded-lg bg-white p-4">
-              <ChartContainer config={chartConfig}>
-                <BarChart
-                  accessibilityLayer
-                  data={chartData[key]}
-                  layout="vertical"
-                  barSize={12}
-                  margin={{
-                    left: 8,
-                    right: 8,
-                  }}
-                >
-                  <YAxis
-                    dataKey="nutrients"
-                    type="category"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    interval={0} // Forces all labels to show
-                  />
-                  <XAxis type="number" hide />
-                  <ChartTooltip
-                    cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
-                  />
-                  <Bar
-                    dataKey="value"
-                    stackId="b"
-                    radius={4}
-                    background={<CustomBackground radius={4} />}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </TabsContent>
-          )
-        ))}
-      </Tabs>
+        </Tabs>
       </div>
     </div>
   )

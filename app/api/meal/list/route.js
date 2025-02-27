@@ -4,6 +4,9 @@ import { getToken } from "next-auth/jwt";
 
 export async function POST(req) {
     try {
+
+        const body = await req.json();
+        const {dateStr} = body;
         // Get session (token)
         const token = await getToken({ req });
         if (!token) {
@@ -12,9 +15,6 @@ export async function POST(req) {
         
         // Get the user ID from the token
         const userId = token.u_id;
-
-        // Get today's date in 'YYYY-MM-DD' format
-        const today = new Date().toISOString().split('T')[0];
 
         // Query to fetch meals for today
         const query = `
@@ -30,7 +30,7 @@ export async function POST(req) {
         `;
         
         // Values to replace placeholders in the query
-        const values = [userId, today];
+        const values = [userId, dateStr];
         
         // Fetch data from the database
         const result = await pool.query(query, values);

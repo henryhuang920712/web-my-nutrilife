@@ -52,12 +52,14 @@ export default function MealTracker() {
   };
 
   const preloadUserMeals = async () => {
+    const dateStr = nowDate;
     try {
       const response = await fetch("/api/meal/list", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({dateStr}),
       });
 
       if (!response.ok) {
@@ -65,8 +67,6 @@ export default function MealTracker() {
       }
 
       const data = await response.json();
-
-      const nowDate = new Date().toISOString().split("T")[0];
 
       const nowMeals = data.map((row, index) => {
         const [nowH, nowM, nowS] = row.time.split(":");
@@ -78,8 +78,6 @@ export default function MealTracker() {
           hour: "2-digit",
           minute: "2-digit",
         });
-        const dateStr = nowDate;
-
         return {
           rowId: index,
           foodId: row.f_id,
@@ -92,7 +90,8 @@ export default function MealTracker() {
         };
       });
 
-      setMeals(nowMeals.sort((a, b) => a.time - b.time));
+      setMeals([...nowMeals].sort((a, b) => a.formattedTime - b.formattedTime));
+
     } catch (error) {
       console.error("Error fetching meals:", error);
       alert("Error fetching meals");
@@ -133,8 +132,11 @@ export default function MealTracker() {
   }, []);
 
   useEffect(() => {
-    fetchFoodData();
     preloadUserMeals();
+  }, [nowDate]);
+
+  useEffect(() => {
+    fetchFoodData();
   }, []);
 
   const addMeal = async (e) => {
@@ -151,14 +153,7 @@ export default function MealTracker() {
     const [hours, minutes] = time.split(":");
     formattedTime.setHours(hours, minutes);
 
-    const dateStr = new Intl.DateTimeFormat("zh-TW", {
-      timeZone: "Asia/Taipei",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
-      .format(formattedTime)
-      .replace(/\//g, "-");
+    const dateStr = nowDate;
 
     const timeStr = formattedTime.toLocaleTimeString("en-US", {
       timeZone: "Asia/Taipei",
@@ -263,10 +258,6 @@ export default function MealTracker() {
     setSelected([]);
   };
 
-  useEffect(() => {
-    console.log(nowDate);
-  }, [nowDate]);
-
   return (
     <div className="min-h-screen bg-gray-50/50 p-4 sm:p-6 md:p-8">
       <Card className="max-w-5xl mx-auto shadow-lg">
@@ -283,7 +274,7 @@ export default function MealTracker() {
             <DatePicker
               fieldName="nowDate"
               value={nowDate}
-              setFieldValue={setNowDate}
+              setFieldValue={(value) => {setNowDate(value);} }
               className="w-48"
               useFormik={false}
             />
@@ -318,7 +309,7 @@ export default function MealTracker() {
                     />
                   </th>
                   {/* 新增日期欄位 */}
-                  <th className="p-4 text-left font-medium">Date</th>{" "}
+                  {/* <th className="p-4 text-left font-medium">Date</th>{" "} */}
                   <th className="p-4 text-left font-medium">
                     <div className="flex items-center gap-2">
                       <Utensils className="w-4 h-4" />
@@ -356,7 +347,7 @@ export default function MealTracker() {
                         />
                       </td>
                       {/* 顯示日期 */}
-                      <td className="p-4 font-medium">{meal.dateStr}</td>{" "}
+                      {/* <td className="p-4 font-medium">{meal.dateStr}</td>{" "} */}
                       <td className="p-4 font-medium">{meal.foodName}</td>
                       <td className="p-4 text-muted-foreground">
                         {meal.foodCategory}
@@ -380,7 +371,7 @@ export default function MealTracker() {
                   <tr className="border-b bg-muted/30">
                     <td className="p-4"></td>
                     {/* 加上日期 */}
-                    <td className="p-4">
+                    {/* <td className="p-4">
                       <div className="flex justify-center">
                         <DatePicker
                           fieldName="nowDate"
@@ -390,7 +381,7 @@ export default function MealTracker() {
                           useFormik={false}
                         />
                       </div>
-                    </td>
+                    </td> */}
                     <td className="p-4 dropdown-container relative">
                       <Input
                         type="text"

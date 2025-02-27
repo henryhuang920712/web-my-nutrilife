@@ -23,6 +23,7 @@ export default function DailyProgress() {
     "膳食纖維": "fiber",
   }
 
+  const colors = ["1", "2", "3"];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -35,6 +36,7 @@ export default function DailyProgress() {
                 intake={nutrient.n_consumed_amount}
                 suggIntake={nutrient.n_sugg_amount}
                 unit={nutrient.n_unit}
+                color={colors[index]}
               />
             )
           }
@@ -48,10 +50,10 @@ export default function DailyProgress() {
 
 
 // only the first 3 nutrients have suggested intake
-function SmallDailyProgress({nutrientName, intake, suggIntake, unit}) {
+function SmallDailyProgress({nutrientName, intake, suggIntake, unit, color}) {
 
   const chartData = [
-    { nutrient: nutrientName, intake: intake, fill: `var(--color-${nutrientName})` },
+    { nutrient: nutrientName, intake: intake, fill: `var(--color-nutrientName)` },
   ]
   const chartConfig = {
     intake: {
@@ -59,8 +61,8 @@ function SmallDailyProgress({nutrientName, intake, suggIntake, unit}) {
     },
     nutrientName: {
       label: nutrientName,
-      color: "hsl(var(--chart-2))",
-    },
+      color: `hsl(var(--chart-${color}))`,
+    }
   }
   
   const intakeRatio = suggIntake == 0 ? 0 : (intake / suggIntake) * 100
