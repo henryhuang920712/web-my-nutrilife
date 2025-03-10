@@ -32,31 +32,59 @@ Before you start, make sure you have the following installed on your machine:
 
 ### Installation
 
-First, clone the repository:
+#### 1. Download the PostgreSQL backup file
+
+Download the PostgreSQL backup file and restore it to your local PostgreSQL database.
+
+#### 2. Clone the repository
 
 ```bash
-git clone
+git clone <repository-url>
 ```
 
-Then, navigate to the project directory:
+#### 3. Navigate to the project directory
 
 ```bash
 cd web-my-nutrilife
 ```
 
-Next, install the dependencies:
+#### 4. Install dependencies
 
 ```bash
 npm install
 # or
-yarn
+yarn install
 ```
 
-### Running the Development Server
+If Next.js is not installed, you can add it manually:
 
-Finally, run the development server:
+```
+npm install next react react-dom
+```
+
+#### 5. Set up environment variables
+
+Generate a secure password and store it in the .env file:
 
 ```bash
+openssl rand -base64 32
+```
+
+Then, create a .env file in the root directory and add the following database configuration:
+
+```
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
+
+NEXTAUTH_SECRET= # YOUR SECURE PASSWORD
+```
+
+#### 6. Running the Development Server
+
+```
 npm run dev
 # or
 yarn dev
@@ -66,75 +94,70 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-### 專案架構
-
-### 專案架構
+### Project Structure
 
 ```
-app
-├── api
-│ ├── auth
-│ ├── food
-│ ├── foodSearch
-│ ├── meal
-│ ├── nutrient
-│ ├── nutrientAnalysis
-│ ├── user
-├── dashboard
-│ ├── page.js
-├── record
-│ ├── page.js
-├── search
-│ ├── page.js
-├── clientLayout.js
-├── favicon.ico.mjs
-├── layout.js
-├── page.js
-
-components
-├── calendar
-├── dashboard
-│ ├── charts
-│ │ ├── caloriesBreakdown.js
-│ │ ├── caloriesPeriodBar.js
-│ │ ├── dailyProgress.js
-│ │ ├── dailyComposition.js
-│ │ ├── nutrientAnalysis.js
-│ ├── dailyIntakeProvider.js
-├── dropdown
-│ ├── optionMenu.js
-├── modal
-├── record
-
-authProvider.js
-imageSlider.js
-navbar.js
-navbarSearch.js
-searchFood.js
-searchInfo.js
-sidebar.js
-
-sidebar
-├── ui
-│ ├── chart.jsx
-├── navbar.js
-├── navbarSearch.js
-├── searchInfo.js
-
-lib
-├── db.js
-
-node_modules
-public
-styles
-├── globals.css
-
-.gitignore
-components.json
-postcss.config.mjs
-tailwind.config.mjs
-package.json
-yarn.lock
+app/
+├── api/                   # 伺服器端 API
+│   ├── auth/              # 使用者認證
+│   │   ├── [...nextauth]/
+│   │   │   ├── options.js  # 認證選項設定
+│   │   │   ├── route.js    # 處理使用者登入/登出
+│   ├── food/
+│   │   ├── search/
+│   │   │   ├── route.js    # 依關鍵字搜尋食物
+│   ├── foodSearch/
+│   │   ├── route.js        # 取得所有食物資料
+│   ├── meal/
+│   │   ├── add/
+│   │   │   ├── route.js    # 新增飲食記錄
+│   │   ├── delete/
+│   │   │   ├── route.js    # 刪除飲食記錄
+│   │   ├── list/
+│   │   │   ├── route.js    # 取得飲食記錄
+│   ├── nutrient/
+│   │   ├── list/
+│   │   │   ├── route.js    # 查詢使用者某段時間內的營養攝取
+│   │   ├── route.js        # 查詢特定食物的營養成分
+│   ├── nutrientAnalysis/
+│   │   ├── route.js        # 取得使用者每日營養攝取數據
+│   ├── user/
+│   │   ├── route.js        # 使用者驗證
+├── components/
+│   ├── authProvider.js     # 使用者驗證 Provider，封裝應用程式內的使用者資料
+│   ├── navbar.js           # 導覽列
+│   ├── navbarSearch.js     # 導覽列內的搜尋欄
+│   ├── searchFood.js       # 搜尋結果顯示
+│   ├── searchInfo.js       # 搜尋結果的下拉選單
+│   ├── dropdown/
+│   │   ├── optionMenu.js   # 使用者個人資料的下拉選單
+│   ├── modal/              # 模態視窗
+│   │   ├── modal.js        # 基礎模態視窗元件
+│   │   ├── loginModal.js   # 登入視窗
+│   │   ├── registerModal.js# 註冊視窗
+│   ├── calendar/
+│   │   ├── datePicker.js   # 日期選擇器
+│   ├── dashboard/          # 儀表板元件
+│   │   ├── dailyIntakeProvider.js  # 提供單日飲食數據的 Context Provider
+│   │   ├── charts/
+│   │   │   ├── dailyProgress.js    # 每日攝取進度條
+│   │   │   ├── caloriesBreakdown.js # 主要三大營養素圓形進度條
+│   │   │   ├── nutrientAnalysis.js # 攝取歷史紀錄與建議攝取折線圖
+│   │   │   ├── dailyComposition.js # 其他營養素攝取進度條
+│   │   │   ├── recordView.js       # 飲食記錄表格
+│   ├── record/
+│   │   ├── mealTracker.js  # 餐點紀錄表格，含編輯與刪除功能
+│   ├── sidebar.js
+│   ├── ui/                 # UI 元件
+├── app/
+│   ├── clientLayout.js     # 用戶端 layout
+│   ├── dashboard/
+│   │   ├── page.js         # 儀表板頁面
+│   ├── record/
+│   │   ├── page.js         # 記錄飲食的頁面
+│   ├── search/
+│   │   ├── page.js         # 搜尋營養素的頁面
+│   ├── layout.js           # 頁面的主要佈局
+│   ├── page.js             # 首頁
+│   ├── globals.css
 ```
