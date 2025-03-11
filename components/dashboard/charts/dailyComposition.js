@@ -68,19 +68,19 @@ export default function DailyComposition({ }) {
 
     setChartData(nowChartData);
 
-    console.log(dailyIntake);
+    // console.log(dailyIntake);
 
   }, [dailyIntake]);
 
 
 
   return (
-    <div className="p-4 col-span-1 bg-white rounded shadow-md">
-      <div>
+    <div className="p-4 col-span-1 bg-white rounded shadow-md h-full">
+      <div className="h-full">
         <div>
           <h5 className="text-base font-semibold mb-2">Daily Composition</h5>
         </div>
-        <Tabs defaultValue="minerals" className="" >
+        <Tabs defaultValue="minerals" className="h-full" >
           <TabsList className={`grid w-full grid-cols-4 items-stretch pb-20`}>
             {Object.keys(nutrients).map((key) => (
               chartData ? (  // Ensure it's not just an empty object/array
@@ -103,9 +103,10 @@ export default function DailyComposition({ }) {
                     accessibilityLayer
                     data={chartData[key]}
                     layout="vertical"
-                    barSize={12}
+                    barSize={Math.max(8, Math.min(16, 200 / chartData[key]?.length))}
+
                     margin={{
-                      left: 8,
+                      left: 16,
                       right: 8,
                     }}
                   >

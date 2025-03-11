@@ -79,7 +79,7 @@ export default function NutrientAnalysis() {
           return {
             date: date,
             consumedAmount: data ? data.n_consumed_amount : 0,
-            suggestedAmount: data ? data.n_sugg_amount : 0,
+            suggestedAmount: data ? data.n_suggested_amount : 0,
           };
         });
         console.log(nowChartData);

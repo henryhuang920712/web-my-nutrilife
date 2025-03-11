@@ -20,12 +20,12 @@ export async function POST(req) {
       );
     }
 
-    console.log("Received request with:", {
-      userId,
-      startDate,
-      endDate,
-      nutrientName,
-    });
+    // console.log("Received request with:", {
+    //   userId,
+    //   startDate,
+    //   endDate,
+    //   nutrientName,
+    // });
 
     // 查詢 Nutrient 表中的 N_id
     const nutrientQuery = "SELECT N_id FROM Nutrient WHERE N_name = $1";
@@ -49,12 +49,12 @@ export async function POST(req) {
     const values = [userId, nutrientId, startDate, endDate];
     const result = await pool.query(query, values);
 
-    if (result.rowCount === 0) {
-      return NextResponse.json(
-        { message: "No records found" },
-        { status: 404 }
-      );
-    }
+    // if (result.rowCount === 0) {
+    //   return NextResponse.json(
+    //     { message: "No records found" },
+    //     { status: 404 }
+    //   );
+    // }
 
     return NextResponse.json(result.rows);
   } catch (error) {
